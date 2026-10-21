@@ -121,31 +121,3 @@ Designed in a Star Schema format with documentation in `powerbi/dashboard_specif
   1. *Executive Overview:* Portfolio gross revenue, order volume, country performance.
   2. *Conversion Funnel:* Conversion drop-off by tier, volume vs revenue contribution.
   3. *Cohort Retention Matrix:* Color-coded heatmap showing monthly decay curves across cohorts.
-
----
-
-## 8. Replication & Setup Instructions
-
-### Prerequisites
-- Python 3.10+
-- MySQL Server 8.0+
-- Power BI Desktop (Optional, for dashboard reproduction)
-
-### Installation
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/piyush8769/ecommerce-funnel-cohort-retention.git
-   cd ecommerce-funnel-cohort-retention
-   ```
-2. Install dependencies:
-   ```bash
-   pip install pandas numpy openpyxl matplotlib seaborn sqlalchemy mysql-connector-python
-   ```
-3. Place `online_retail_II.xlsx` into the `data/` folder.
-4. Execute notebooks sequentially:
-   - `01_exploratory_data_analysis.ipynb`
-   - `02_data_cleaning.ipynb`
-   - `03_customer_funnel_analysis.ipynb`
-   - `04_cohort_retention_analysis.ipynb`
-   - `05_database_export.ipynb`
-5. Execute `sql/customer_retention_analytics.sql` in MySQL Workbench.
