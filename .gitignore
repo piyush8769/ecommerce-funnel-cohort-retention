@@ -1,0 +1,16 @@
+# Python cache
+__pycache__/
+*.pyc
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Virtual environments
+venv/
+env/
+.env
+
+# Raw & processed large datasets (>50MB - Git ignored to prevent repository bloat)
+data/online_retail_II.xlsx
+data/retail_cleaned.csv
+

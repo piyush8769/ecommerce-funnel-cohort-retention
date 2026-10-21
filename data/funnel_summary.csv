@@ -1,0 +1,5 @@
+FunnelStage,CustomerCount,CustomerPercent,TotalRevenue,AvgSpendPerCustomer,RevenuePercent
+1. One-Time Buyer,1623,27.6,560272.56,345.21,3.2
+2. Repeat Buyer,944,16.1,811434.85,859.57,4.7
+3. Loyal Buyer (3-5),1510,25.7,2093928.05,1386.71,12.1
+4. Champion (6+),1801,30.6,13909168.8,7723.03,80.1
