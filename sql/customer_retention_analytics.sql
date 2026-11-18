@@ -226,3 +226,64 @@ SELECT
 FROM CohortActivity
 GROUP BY cohort_month
 ORDER BY cohort_month ASC;
+
+
+-- ==============================================================
+-- 6. RFM (RECENCY, FREQUENCY, MONETARY) CUSTOMER SEGMENTATION
+-- ==============================================================
+
+-- Segment customers into actionable tiers using NTILE(5) quintiles across R, F, and M
+WITH CustomerBaseMetrics AS (
+    SELECT 
+        CustomerID,
+        DATEDIFF('2011-12-10', MAX(InvoiceDate)) AS recency_days,
+        COUNT(DISTINCT Invoice) AS frequency_orders,
+        ROUND(SUM(TotalRevenue), 2) AS monetary_spend
+    FROM retail_clean
+    GROUP BY CustomerID
+),
+RFMScores AS (
+    SELECT 
+        CustomerID,
+        recency_days,
+        frequency_orders,
+        monetary_spend,
+        -- Higher recency score for lower days (more recent)
+        NTILE(5) OVER (ORDER BY recency_days DESC) AS r_score,
+        NTILE(5) OVER (ORDER BY frequency_orders ASC) AS f_score,
+        NTILE(5) OVER (ORDER BY monetary_spend ASC) AS m_score
+    FROM CustomerBaseMetrics
+),
+RFMSegmentation AS (
+    SELECT 
+        CustomerID,
+        recency_days,
+        frequency_orders,
+        monetary_spend,
+        r_score,
+        f_score,
+        m_score,
+        ROUND((r_score + f_score + m_score) / 3.0, 2) AS rfm_composite_score,
+        CASE 
+            WHEN r_score >= 4 AND f_score >= 4 AND m_score >= 4 THEN 'Champions'
+            WHEN r_score >= 3 AND f_score >= 3 THEN 'Loyal Customers'
+            WHEN r_score >= 4 AND f_score < 2 THEN 'Recent New Customers'
+            WHEN r_score <= 2 AND f_score >= 3 THEN 'At Risk / High Value Churn'
+            WHEN r_score <= 2 AND f_score <= 2 THEN 'Hibernating / Churned'
+            ELSE 'Potential Loyalists'
+        END AS customer_segment
+    FROM RFMScores
+)
+SELECT 
+    customer_segment,
+    COUNT(*) AS total_customers,
+    ROUND(COUNT(*) * 100.0 / SUM(COUNT(*)) OVER(), 2) AS customer_share_pct,
+    ROUND(AVG(recency_days), 1) AS avg_recency_days,
+    ROUND(AVG(frequency_orders), 1) AS avg_orders,
+    ROUND(AVG(monetary_spend), 2) AS avg_spend,
+    ROUND(SUM(monetary_spend), 2) AS total_segment_revenue,
+    ROUND(SUM(monetary_spend) * 100.0 / SUM(SUM(monetary_spend)) OVER(), 2) AS revenue_share_pct
+FROM RFMSegmentation
+GROUP BY customer_segment
+ORDER BY total_segment_revenue DESC;
+
